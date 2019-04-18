@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+
+    <ui:composition>
+        <ul>
+            <ui:fragment rendered="#{!clientBean.isLoggedIn() || clientBean.privilegeID == 1}">
+                <li>
+                    <h:form>
+                        <h:commandLink value="#{msgs.menuHome}" action="index?faces-redirect=true">
+                            <f:setPropertyActionListener target="#{genreBean.genreID}" value="0"/>
+                            <f:setPropertyActionListener target="#{genreBean.name}" value=""/>
+                        </h:commandLink>
+                    </h:form>
+                </li>
+                <li>
+                    <h:form>
+                        <h:commandLink value="#{msgs.menuNewBooks}" action="recentBooks?faces-redirect=true">
+                            <f:setPropertyActionListener target="#{genreBean.genreID}" value="0"/>
+                        </h:commandLink>
+                    </h:form>
+                </li>
+                <li><h:link value="#{msgs.menuContactus}" outcome="contactus" /></li>
+                <li>
+                    <h:form>
+                        <h:commandLink value="#{msgs.menuShoppingcart}" action="shoppingcart?faces-redirect=true"/>
+                    </h:form>
+                </li>
+            </ui:fragment>
+            <li>
+                <h:form>
+                    <h:commandLink rendered ="#{!clientBean.isLoggedIn()}" value="#{msgs.menuLogin}" action="login">
+                        <f:setPropertyActionListener target="#{clientBean.referencePage}" value="orderHistory"/>
+                    </h:commandLink>
+                </h:form>
+            </li>
+            <li><h:link rendered ="#{clientBean.isLoggedIn()}" value="#{msgs.menuMyaccount}" outcome="registrationForm" /></li>
+
+            <li>
+                <h:form>
+                    <h:commandLink rendered ="#{clientBean.isLoggedIn()}" value="#{msgs.menuLogout}" action="#{clientBean.logout()}"/>
+                </h:form>
+            </li>
+        </ul>
+    </ui:composition>
+</html>

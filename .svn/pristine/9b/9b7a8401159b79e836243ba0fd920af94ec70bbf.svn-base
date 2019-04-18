@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:ebook="http://ebook.com/facelets">
+
+    <ui:composition>
+        <h1>#{msgs.pageBookSpecialsOfTheDay}</h1>
+
+        <div class="cleaner_with_height">&nbsp;</div>
+
+        <ui:fragment rendered="#{eBookActionBean.lastViewedBooks != null}">
+            <h1>#{msgs.pageRecommendBooks}</h1>
+            <ui:repeat value="#{eBookActionBean.recommendBooks}" var="book">
+                <ebook:book book="#{book}"></ebook:book>
+                <div class="cleaner_with_height">&nbsp;</div>
+            </ui:repeat>
+        </ui:fragment>
+        <ui:fragment rendered="#{eBookActionBean.lastViewedBooks == null}">
+            <h1>#{msgs.pageRecentBooks}</h1>
+            <ui:repeat value="#{eBookActionBean.recentBooks}" var="book" size="3">
+                <ebook:book book="#{book}"></ebook:book>
+                <div class="cleaner_with_height">&nbsp;</div>
+            </ui:repeat>
+        </ui:fragment>
+    </ui:composition>
+</html>

@@ -1,0 +1,300 @@
+package com.cejv539.ebook.actionbeans;
+
+import com.cejv539.ebook.beans.BookBean;
+import com.cejv539.ebook.beans.GenreBean;
+import com.cejv539.ebook.beans.ReviewBean;
+import com.cejv539.ebook.beans.SearchBean;
+import com.cejv539.ebook.beans.SiteBean;
+import com.cejv539.ebook.entities.Genre;
+import com.cejv539.ebook.entities.Inventory;
+import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.List;
+import javax.annotation.Resource;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.transaction.UserTransaction;
+
+import static com.cejv539.ebook.constants.EBookConstants.RECENT_BOOKS_QTY;
+import static com.cejv539.ebook.constants.EBookConstants.TOP_SELLERS_QTY;
+import com.cejv539.ebook.entities.Clients;
+import com.cejv539.ebook.entities.Reviews;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+
+/**
+ * action bean for page queries
+ *
+ * @author jianyu.feng
+ */
+@Named
+@SessionScoped
+public class EBookActionBean implements Serializable {
+
+    @Resource
+    private UserTransaction userTransaction;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Inject
+    private GenreBean genreBean;
+
+    @Inject
+    private SearchBean searchBean;
+
+    @Inject
+    private BookBean bookBean;
+
+    @Inject
+    private ReviewBean reviewBean;
+
+    @Inject
+    private SiteBean siteBean;
+    
+    @Inject
+    private PreRenderViewBean preRenderViewBean;
+
+    /**
+     * get all genres to a list
+     *
+     * @return
+     * @throws SQLException
+     */
+    public List<Genre> getGenre() throws SQLException {
+
+        TypedQuery<Genre> query = entityManager.createQuery("SELECT g FROM Genre g", Genre.class);
+
+        List<Genre> genres = query.getResultList();
+
+        return genres;
+    }
+
+    /**
+     * get all books from selected genre, or get all books from inventory if
+     * there is no genre provided
+     *
+     * @return
+     */
+    public List<Inventory> getBooksByGenreID() {
+
+        TypedQuery<Inventory> query;
+
+        if (genreBean.getGenreID() != 0) {
+            query = entityManager.createQuery("SELECT i FROM Inventory i, Genre g where i.genreID.genreID = g.genreID and g.genreID = ?1", Inventory.class);
+            query.setParameter(1, genreBean.getGenreID());
+        } else {
+            query = entityManager.createQuery("SELECT i FROM Inventory i", Inventory.class);
+        }
+
+        List<Inventory> books = query.getResultList();
+
+        return books;
+    }
+
+    /**
+     * get recent books from selected genre, or get recent books from inventory
+     * if there is no genre provided
+     *
+     * @return
+     */
+    public List<Inventory> getRecentBooks() {
+
+        TypedQuery<Inventory> query;
+
+        if (genreBean.getGenreID() != 0) {
+            query = entityManager.createQuery("SELECT i FROM Inventory i, Genre g where i.genreID.genreID = g.genreID and g.genreID = ?1 order by i.createdDate desc", Inventory.class);
+            query.setParameter(1, genreBean.getGenreID());
+        } else {
+            query = entityManager.createQuery("SELECT i FROM Inventory i order by i.createdDate desc", Inventory.class);
+        }
+
+        query.setMaxResults(RECENT_BOOKS_QTY);
+
+        List<Inventory> books = query.getResultList();
+
+        return books;
+    }
+
+    /**
+     * get top sellers from selected genre, or get top sellers from inventory if
+     * there is no genre provided
+     *
+     * @return
+     */
+    public List<Inventory> getTopSellers() {
+
+        TypedQuery<Inventory> query;
+
+        if (genreBean.getGenreID() != 0) {
+            query = entityManager.createQuery("SELECT i FROM Inventory i, Genre g where i.genreID.genreID = g.genreID and g.genreID = ?1 order by i.soldQty desc", Inventory.class);
+            query.setParameter(1, genreBean.getGenreID());
+        } else {
+            query = entityManager.createQuery("SELECT i FROM Inventory i order by i.soldQty desc", Inventory.class);
+        }
+
+        query.setMaxResults(TOP_SELLERS_QTY);
+
+        List<Inventory> books = query.getResultList();
+
+        return books;
+    }
+
+    /**
+     * get last viewed books
+     *
+     * @return
+     */
+    public List<Inventory> getLastViewedBooks() {
+        List<Inventory> books = null;
+        
+        preRenderViewBean.retrieveCookies();
+        
+        if (siteBean.getLastViewedBooks() != null && siteBean.getLastViewedBooks().length() > 0) {
+            TypedQuery<Inventory> query;
+
+            query = entityManager.createQuery("SELECT i FROM Inventory i where i.bookID in :books", Inventory.class);
+
+            query.setParameter("books", Arrays.asList(siteBean.getLastViewedBooks().split("[\\s,]+")));
+
+            books = query.getResultList();
+        }
+        
+        return books;
+    }
+
+    /**
+     * basic search function
+     *
+     * @return
+     */
+    public List<Inventory> searchBooks() {
+
+        TypedQuery<Inventory> query;
+
+        if (genreBean.getGenreID() != 0) {
+            query = entityManager.createQuery("SELECT i FROM Inventory i, Genre g where i.genreID.genreID = g.genreID and g.genreID = :genreID and i.title like :title", Inventory.class);
+            query.setParameter("genreID", genreBean.getGenreID());
+            query.setParameter("title", "%" + searchBean.getTitle() + "%");
+        } else {
+            query = entityManager.createQuery("SELECT i FROM Inventory i where i.title like :title", Inventory.class);
+            query.setParameter("title", "%" + searchBean.getTitle() + "%");
+        }
+
+        List<Inventory> books = query.getResultList();
+
+        return books;
+    }
+
+    /**
+     * advance server function, based on title, author & isbn
+     *
+     * @return
+     */
+    public List<Inventory> searchBooksAdvance() {
+
+        TypedQuery<Inventory> query;
+
+        query = entityManager.createQuery("SELECT i FROM Inventory i where i.title like :title and i.author like :author and i.isbn like :isbn", Inventory.class);
+        query.setParameter("title", "%" + searchBean.getTitle() + "%");
+        query.setParameter("author", "%" + searchBean.getAuthor() + "%");
+        query.setParameter("isbn", "%" + searchBean.getISBN() + "%");
+
+        List<Inventory> books = query.getResultList();
+
+        return books;
+    }
+
+    /**
+     * get book detail by book id
+     *
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
+    public void getBookDetails() throws IllegalAccessException, InvocationTargetException {
+
+        TypedQuery<Inventory> query = entityManager.createNamedQuery("Inventory.findByBookID", Inventory.class);
+        query.setParameter("bookID", bookBean.getBookID());
+        //query.setMaxResults(1);
+        Inventory book = query.getSingleResult();
+
+        bookBean.setBookID(book.getBookID());
+        bookBean.setAuthor(book.getAuthor());
+        bookBean.setCreatedDate(book.getCreatedDate());
+        bookBean.setDescription(book.getDescription());
+        bookBean.setImage(book.getImage());
+        bookBean.setIsbn(book.getIsbn());
+        bookBean.setListPrice(book.getListPrice());
+        bookBean.setWholesalePrice(book.getWholesalePrice());
+        bookBean.setNumberOfPages(book.getNumberOfPages());
+        bookBean.setPublisher(book.getPublisher());
+        bookBean.setStatus(book.getStatus());
+        bookBean.setTitle(book.getTitle());
+
+        //BeanUtils.copyProperties(book, bookBean);
+    }
+
+    /**
+     * save review to db
+     */
+    public void reviewBook() {
+        try {
+            userTransaction.begin();
+
+            Clients clients = new Clients();
+            clients.setClientID(2);
+
+            Inventory book = new Inventory();
+            book.setBookID(bookBean.getBookID());
+
+            Reviews reviews = new Reviews();
+
+            reviews.setBookID(book);
+            reviews.setClientID(clients);
+            reviews.setRating(reviewBean.getRating());
+            reviews.setReviewDate(new Date());
+            reviews.setReviewText(reviewBean.getReviewText());
+            reviews.setStatus((short) 1);
+
+            entityManager.persist(reviews);
+
+            userTransaction.commit();
+
+            reviewBean.setRating((short) 0);
+            reviewBean.setReviewText("");
+        } catch (NotSupportedException | SystemException | HeuristicMixedException | HeuristicRollbackException | IllegalStateException | RollbackException | SecurityException ex) {
+            Logger.getLogger(CartActionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    /**
+     * get reviews by book id
+     *
+     * @param bookID
+     * @return
+     */
+    public List<Object[]> getReviewsByBook(int bookID) {
+        TypedQuery<Object[]> query;
+
+        query = entityManager.createQuery("SELECT c.firstName, c.lastName, r.reviewDate, r.rating, r.reviewText FROM Reviews r inner join r.bookID i inner join r.clientID c where i.bookID = :bookID and r.status = 1", Object[].class);
+        query.setParameter("bookID", bookID);
+
+        List<Object[]> reviews = query.getResultList();
+
+        return reviews;
+    }
+
+}

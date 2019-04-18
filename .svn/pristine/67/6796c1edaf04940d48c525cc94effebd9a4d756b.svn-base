@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:composition>
+        <h1>#{msgs.orderDetailsTitle}</h1>
+
+
+        <p>#{clientBean.firstName}  #{clientBean.lastName} </p>
+        <p>#{clientBean.address1}  #{clientBean.address2} </p>
+        <p>#{clientBean.city}  #{clientBean.province} </p>
+        <p>#{clientBean.postalCode} </p>
+
+
+        <p> Invoice: #{invoiceBean.invoiceID}</p>      
+
+        <h:dataTable value="#{invoiceActionBean.getOrdersDetailsByID(invoiceBean.invoiceID)}" var="i" styleClass="cartdetails" headerClass="header">
+
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Book Title</f:facet>
+                <!-- row record -->
+                <h:outputText value="#{i[3]}" /> 
+            </h:column>
+
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Price</f:facet>
+                <!-- row record -->
+                <h:outputText value="#{i[1]}" /> 
+            </h:column>
+
+
+            <f:facet name="footer">
+                <ui:repeat value="#{invoiceActionBean.getOrdersByID(invoiceBean.invoiceID)}" var="f"> 
+                    <p> <h:outputText value="GST: #{f[0]}" /></p>
+                    <p> <h:outputText value="Discount: #{f[1]}" /></p>
+                    <p>  <h:outputText value="Sub Total: #{f[2]}" /></p> 
+                    <p><h:outputText value="Invoice Total: #{f[3]}" /></p>
+                </ui:repeat>
+
+            </f:facet>
+
+        </h:dataTable>
+    </ui:composition>
+
+</html>

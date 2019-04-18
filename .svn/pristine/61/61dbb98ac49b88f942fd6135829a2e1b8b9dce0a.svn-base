@@ -1,0 +1,86 @@
+package com.cejv539.ebook.actionbeans;
+
+import com.cejv539.ebook.beans.InventoryBean;
+import com.cejv539.ebook.entities.Inventory;
+import java.io.Serializable;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.Resource;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.transaction.UserTransaction;
+
+/**
+ *
+ * @author Arlyn.Zamudio
+ */
+@Named
+@SessionScoped
+public class InventoryActionBean implements Serializable {
+
+    @Resource
+    private UserTransaction userTransaction;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Inject
+    private InventoryBean inventoryBean;
+
+    /**
+     * get list of all inventory
+     *
+     * @return
+     */
+    public List<Object[]> getInventory() {
+
+        TypedQuery<Object[]> query;
+        query = entityManager.createQuery("SELECT i.bookID,i.title,g.name,i.isbn,i.listPrice,i.publisher FROM Inventory i inner join i.genreID g", Object[].class);
+
+        List<Object[]> inventory = query.getResultList();
+        return inventory;
+
+    }
+
+    /**
+     * insert inventory to db
+     */
+    public String insertInventoryForm() {
+        boolean success = true;
+
+        try {
+            userTransaction.begin();
+            Inventory i = new Inventory();
+            i.setAuthor(inventoryBean.getAuthor());
+            i.setDescription(inventoryBean.getDescription());
+            i.setGenreID(inventoryBean.getGenreID());
+            i.setImage(inventoryBean.getImage());
+            i.setIsbn(inventoryBean.getIsbn());
+            i.setNumberOfPages(inventoryBean.getNumberOfPages());
+            i.setPublisher(inventoryBean.getPublisher());
+            i.setWholesalePrice(inventoryBean.getWholesalePrice());
+            entityManager.persist(i);
+            userTransaction.commit();
+
+        } catch (Exception ex) {
+            Logger.getLogger(InventoryBean.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                userTransaction.rollback();
+                success = false;
+
+            } catch (Exception ex1) {
+                Logger.getLogger(InventoryActionBean.class.getName()).log(Level.SEVERE, null, ex1);
+                success = false;
+            }
+
+        }
+
+        return "registrationForm";
+    }
+
+}

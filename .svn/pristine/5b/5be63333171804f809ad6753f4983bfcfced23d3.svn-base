@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:composition>
+        <div id="adminheader">
+            <div id="orders">
+                <ul>
+                    <li>
+                        <h:form>
+                            <h:link value="#{eBookActionBean.submittedOrders} new orders submitted today" outcome="reviewManagement" >
+                            </h:link>
+                        </h:form>
+                    </li>
+                </ul>
+            </div>
+            <div id="reviews">
+                <ul>
+                    <li>
+                        <h:form>
+                            <h:link value="#{reviewActionBean.unapprovedReviews} new reviews submitted" outcome="reviewManagement" >
+                            </h:link>
+                        </h:form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </ui:composition>
+
+</html>

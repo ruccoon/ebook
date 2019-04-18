@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:insert name="content">
+        <h:link rendered ="#{clientBean.isLoggedIn()}" value="My Profile" outcome="registrationForm" class="current" />
+
+        <p><h:link rendered ="#{clientBean.isLoggedIn()}" value="Order History" outcome="orderHistory" class="current" /></p>
+        <p><h:link rendered ="#{clientBean.isLoggedIn()}" value="Download my ebooks" outcome="orderHistory" class="current" /></p>
+        <p><h:link rendered ="#{clientBean.privilegeID==0}" value="Inventory Management" outcome="orderHistory" class="current" /></p>
+        <p><h:link rendered ="#{clientBean.privilegeID==0}" value="Review Management" outcome="orderHistory" class="current" /></p>
+        <p><h:link rendered ="#{clientBean.privilegeID==0}" value="Reporting" outcome="orderHistory" class="current" /></p>
+      
+        
+        <h1>                
+            <h:link rendered ="#{!clientBean.isLoggedIn()}" value="Login" outcome="login" class="current" />
+
+            <h:form>
+                <h:commandLink rendered ="#{clientBean.isLoggedIn()}" value="Logout" action="#{clientBean.logout()}"/>
+            </h:form>
+        </h1>
+    </ui:insert>
+
+</html>

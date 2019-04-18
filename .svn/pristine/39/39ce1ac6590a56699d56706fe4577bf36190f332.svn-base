@@ -1,0 +1,60 @@
+package com.cejv539.ebook.actionbeans;
+
+import com.cejv539.ebook.beans.BookBean;
+import com.cejv539.ebook.beans.SiteBean;
+
+import javax.enterprise.context.RequestScoped;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.http.Cookie;
+
+@Named
+@RequestScoped
+public class PreRenderViewBean {
+
+    @Inject
+    SiteBean siteBean;
+
+    @Inject
+    BookBean bookBean;
+
+    /**
+     * retrieve last viewed books cookie
+     *
+     */
+    public void retrieveCookies() {
+        FacesContext context = FacesContext.getCurrentInstance();
+
+        // Retrieve a specific cookie
+        Object lastViewedBooksCookie = context.getExternalContext().getRequestCookieMap().get("LastViewedBooksCookie");
+        if (lastViewedBooksCookie != null) {
+            siteBean.setLastViewedBooks(((Cookie) lastViewedBooksCookie).getValue());
+        } else{
+            siteBean.setLastViewedBooks("");
+        }
+    }
+
+    /**
+     * update last viewed books cookie with current book id
+     *
+     */
+    public void writeCookie() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        String cookieValue;
+
+        // \s matches any white space
+        // convert " item1 , item2 , item3 , " to ["item1", "item2", "item3"]
+        String[] books = siteBean.getLastViewedBooks().split("[\\s,]+");
+        if (books.length > 2) {
+            cookieValue = bookBean.getBookID() + "," + books[0] + "," + books[1];
+        } else {
+            cookieValue = bookBean.getBookID() + "," + siteBean.getLastViewedBooks();
+        }
+
+        siteBean.setLastViewedBooks(cookieValue);
+
+        context.getExternalContext().addResponseCookie("LastViewedBooksCookie", cookieValue, null);
+    }
+
+}

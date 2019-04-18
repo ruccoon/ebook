@@ -1,0 +1,15 @@
+package com.cejv539.ebook.constants;
+
+import java.math.BigDecimal;
+
+/**
+ *
+ * @author Jianyu Feng
+ */
+public class EBookConstants {
+
+    public static final int RECENT_BOOKS_QTY = 3; //recent books quantity 
+    public static final int TOP_SELLERS_QTY = 3; //top seller books quantity
+    public static final BigDecimal GST_RATE = new BigDecimal("0.05"); //gst rate
+}
+

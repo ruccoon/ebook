@@ -1,0 +1,118 @@
+menuHome=Home
+menuNewBooks=New Books
+menuContactus=Contact us
+menuShoppingcart=Shopping cart
+menuLogin=Login
+menuLogout=Logout
+menuMyaccount=My Account
+
+pageTitle=EBook Store
+pageHeader=Welcome to EBook Store
+pageCopyright=@2014 EBook Store | CEJV539 by Arlyn & Jianyu
+pageSidebarLeft=This is page sitebar left
+pageRecentBooks=New Books
+pageBestSellers=BestSellers
+pageGenres=Genres
+pageAllOtherBooks=Check all other books
+pageRecentVisitedBooks=Recent Visited Books
+pageBookSpecialsOfTheDay=Specials of the day
+pageSearchResult=Search Result
+pageHome=Home
+pageThankyou=Thank you for your order! You can download the ebook from 'My Account' section.
+pageContactUS="CEJV539 \n Professor: Ken Fogel<br>Student: Arlyn & Jianyu"
+pageLastViewedBooks=Last Viewed Books
+
+searchBookTitle=Title
+searchBookAuthor=Author
+searchBookISBN=ISBN Number
+searchBook=Search
+searchBookAdvance=Advance Search
+searchNoResult=No search result found
+
+cart=Shopping cart
+cartTitle=Title
+cartQuantity=Quantity
+cartPrice=Price
+cartDiscount=Discount
+cartSubtotal=Subtotal
+cartGst=GST
+cartTotal=Total
+cartCheckout=Check Out
+cartNoProduct=Your shopping cart is empty
+
+checkoutProcess=Submit
+checkoutName=Name:
+checkoutCreditCard=Credit Card:
+checkoutExpirationDate=Expiration date (MM/Year):
+checkoutNameRequired=Please enter name
+checkoutCardRequired=Please enter credit card
+checkoutThankyou=Thank you
+badCreditCardCharacter=''{0}'' is an invalid card number. 
+badCreditCardCharacter_detail=The card number contains the invalid character {0}. 
+badLuhnCheck=Luhn check fails.
+badLuhnCheck_detail=credit card is invalid.
+creditCardError=One or more digits of the credit card number {0} are incorrect. 
+enterPayment=Please enter the payment information: 
+javax.faces.converter.DateTimeConverter.DATE=''{0}'' could not be understood as a date.
+javax.faces.converter.DateTimeConverter.DATE_detail=''{0}'' could not be understood as a date. Example: {1} 
+javax.faces.converter.NumberConverter.NUMBER=''{0}'' is not a number.
+javax.faces.converter.NumberConverter.NUMBER_detail=''{0}'' is not a number. Example: {1}
+
+#Login
+headTitle= Login
+namePrompt=User Name
+passwordPrompt=Password
+loginButtonText=Login
+createAccount= Create New Account
+userNameRequired = Please enter user name
+passwordRequired = Please enter password
+
+#User Registration
+clientId=Client ID
+clientHeadTitle= Registration Form
+clientFormTitle= Registration Form
+clientTitle=Title
+clientLastName=Last Name
+clientFirstName=First Name
+clientCompanyName=Company Name
+clientAddress1= Address 1
+clientAddress2=Address 2
+clientCity=City
+clientProvince=Province
+clientCountry=Country
+clientPostalCode=Postal Code
+clientHomePhone=Home Phone Number
+clientCellPhone=Cell Phone Number
+clientEmail=Email
+clientPassword=Password
+clientUserName=User Name
+clientRegisterButton=Register
+clientRegistrationSave=Save
+
+
+#User Registration Requiered Fields
+requiredClientTitle=Please Enter Title
+requiredClientLastName=Please Enter Last Name
+requiredClientFirstName=Please Enter First Name
+requiredClientCompanyName=Please Enter Company Name
+requiredClientAddress1= Please Enter Address 1
+requiredClientCity=Please Enter City
+requiredClientProvince=Please Enter Province
+requiredClientCountry=Please Enter Country
+requiredClientPostalCode=Please Enter Postal Code
+requiredClientHomePhone=Please Enter Home Phone Number
+requiredClientCellPhone=Please Enter Cell Phone Number
+requiredClientEmail=Please Enter Email
+requiredClientPassword=Please Enter Password
+requiredClientUserName=Please Enter USer Name
+
+#Order History
+orderHistoryTitle= Order History
+orderHistoryInvoiceID=Invoice ID
+orderHistoryInvoiceDate=Invoice Date
+orderHistoryClientID=Client ID
+orderHistoryInvoiceTotal=Invoice Total
+
+
+#Order Details
+orderDetailsTitle= Order Details

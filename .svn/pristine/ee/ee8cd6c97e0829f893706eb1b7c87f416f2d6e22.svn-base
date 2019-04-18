@@ -1,0 +1,113 @@
+package com.cejv539.ebook.actionbeans;
+
+import com.cejv539.ebook.beans.ReportBean;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Calendar;
+import javax.annotation.Resource;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
+import javax.transaction.UserTransaction;
+
+/**
+ *
+ * @author arlyn.zamudio
+ */
+@Named
+@SessionScoped
+public class ReportActionBean implements Serializable {
+
+    @Resource
+    private UserTransaction userTransaction;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Inject
+    private ReportBean reportBean;
+
+    /**
+     * get Top Sales Report Details
+     *
+     * @return
+     */
+    public String getSales() {
+
+        TypedQuery<Object[]> query;
+        query = entityManager.createQuery("SELECT count(i.bookID) as bookCount,i.bookID,b.title, sum(i.price) as cost "
+                + "FROM Invoicedetails i inner join i.bookID b inner join i.invoiceID inv"
+                + " WHERE inv.invoiceDate >= :startDate AND inv.invoiceDate <= :endDate"
+                + " GROUP BY i.bookID,b.title", Object[].class);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(reportBean.getEndDate());
+        cal.add(Calendar.DATE, 1);
+
+        query.setParameter("startDate", reportBean.getStartDate(), TemporalType.DATE);
+        query.setParameter("endDate", cal.getTime(), TemporalType.DATE);
+
+        reportBean.setTopSalesReport(query.getResultList());
+
+        getSalesTotal();
+
+        return "topSalesReport";
+    }
+
+    /**
+     * get Top Sales Total
+     *
+     * @return
+     */
+    public void getSalesTotal() {
+
+        TypedQuery<BigDecimal> query;
+        query = entityManager.createQuery("SELECT  sum(i.invoiceTotal) as totalCost FROM Invoice i ", BigDecimal.class);
+
+        reportBean.setTotalSales(query.getResultList().get(0));
+
+    }
+
+    /**
+     * get Top Seller Report Details
+     *
+     * @return
+     */
+    public String getTopSeller() {
+
+        TypedQuery<Object[]> query;
+        query = entityManager.createQuery("SELECT count(i.bookID) as bookCount,i.bookID,b.title"
+                + " FROM Invoicedetails i inner join i.bookID b inner join i.invoiceID inv"
+                + " GROUP BY i.bookID,b.title ORDER BY bookCount DESC ", Object[].class);
+
+        reportBean.setTopSellerReport(query.getResultList());
+
+        return "topSellerReport";
+
+    }
+
+    /**
+     * get Top Client Report Details
+     *
+     * @return
+     */
+    public String getTopClients() {
+
+        TypedQuery<Object[]> query;
+        query = entityManager.createQuery("SELECT i.clientID,c.firstName,c.lastName"
+                + ", sum(i.invoiceTotal) as cost FROM Invoice i inner join i.clientID c"
+                + " GROUP BY i.clientID,c.firstName,c.lastName"
+                + " ORDER BY cost DESC", Object[].class);
+
+        reportBean.setTopClientsReport(query.getResultList());
+        getSalesTotal();
+
+        return "topClientsReport";
+
+    }
+
+}

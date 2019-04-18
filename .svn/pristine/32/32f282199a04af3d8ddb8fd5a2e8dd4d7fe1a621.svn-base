@@ -1,0 +1,193 @@
+package com.cejv539.ebook.actionbeans;
+
+import com.cejv539.ebook.beans.ClientBean;
+import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.List;
+import javax.annotation.Resource;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.transaction.UserTransaction;
+
+import com.cejv539.ebook.entities.Clients;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.enterprise.context.SessionScoped;
+
+@Named
+@SessionScoped
+public class ClientActionBean implements Serializable {
+
+    @Resource
+    private UserTransaction userTransaction;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Inject
+    private ClientBean clientBean;
+
+    private List<Clients> client;
+
+    /**
+     * get all client list
+     *
+     * @return
+     * @throws SQLException
+     */
+    public List<Clients> getClient() throws SQLException {
+        TypedQuery<Clients> query = entityManager.createQuery("SELECT c FROM Clients c", Clients.class);
+        List<Clients> client = query.getResultList();
+        return client;
+    }
+
+    /**
+     * get client from user name and password
+     *
+     * @return
+     */
+    public String getClientByUserNamePW() {
+        TypedQuery<Clients> query;
+        if ((clientBean.getUserName() != null) && (clientBean.getPassword() != null)) {
+            query = entityManager.createQuery("SELECT c FROM Clients c where c.username=?1 and c.password = ?2", Clients.class);
+            query.setParameter(1, clientBean.getUserName());
+            query.setParameter(2, clientBean.getPassword());
+        } else {
+            query = null;
+        }
+        if (query.getResultList().size() != 0 && query != null) {
+            clientBean.login();
+            clientBean.setClientID(query.getResultList().get(0).getClientID());
+            clientBean.setCompanyName(query.getResultList().get(0).getCompanyName());
+            clientBean.setFirstName(query.getResultList().get(0).getFirstName());
+            clientBean.setLastName(query.getResultList().get(0).getLastName());
+            clientBean.setAddress1(query.getResultList().get(0).getAddress1());
+            clientBean.setAddress2(query.getResultList().get(0).getAddress2());
+            clientBean.setCellPhone(query.getResultList().get(0).getCellPhone());
+            clientBean.setCity(query.getResultList().get(0).getCity());
+            clientBean.setCountry(query.getResultList().get(0).getCountry());
+            clientBean.setEmail(query.getResultList().get(0).getEmail());
+            clientBean.setProvince(query.getResultList().get(0).getProvince());
+            clientBean.setTitle(query.getResultList().get(0).getTitle());
+            clientBean.setPostalCode(query.getResultList().get(0).getPostalCode());
+            clientBean.setHomePhone(query.getResultList().get(0).getHomePhone());
+
+            return "index";
+        } else {
+            clientBean.setInvalidLogin("Invalid Login");
+            return "login";
+        }
+
+    }
+
+    /**
+     * save registration form to db
+     */
+    public void saveRegistrationForm() {
+        boolean success = true;
+
+        try {
+            userTransaction.begin();
+            Clients cb = entityManager.find(Clients.class, clientBean.getClientID());
+            cb.setCompanyName(clientBean.getCompanyName());
+            cb.setTitle(clientBean.getTitle());
+            cb.setFirstName(clientBean.getFirstName());
+            cb.setLastName(clientBean.getLastName());
+            cb.setAddress1(clientBean.getAddress1());
+            cb.setAddress2(clientBean.getAddress2());
+            cb.setCity(clientBean.getCity());
+            cb.setProvince(clientBean.getProvince());
+            cb.setPostalCode(clientBean.getPostalCode());
+            cb.setCountry(clientBean.getCountry());
+            cb.setEmail(clientBean.getEmail());
+            cb.setHomePhone(clientBean.getHomePhone());
+            cb.setCellPhone(clientBean.getCellPhone());
+            cb.setUsername(clientBean.getUserName());
+            cb.setPassword(clientBean.getPassword());
+
+            userTransaction.commit();
+        } catch (Exception ex) {
+            Logger.getLogger(ClientActionBean.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                userTransaction.rollback();
+                success = false;
+
+            } catch (Exception ex1) {
+                Logger.getLogger(ClientActionBean.class.getName()).log(Level.SEVERE, null, ex1);
+                success = false;
+            }
+
+        }
+    }
+    
+    
+    
+    /**
+     * insert registration form to db
+     */
+    public String insertRegistrationForm() {
+        boolean success = true;
+
+        try {
+            userTransaction.begin();
+            Clients cb = new Clients();
+            cb.setCompanyName(clientBean.getCompanyName());
+            cb.setTitle(clientBean.getTitle());
+            cb.setFirstName(clientBean.getFirstName());
+            cb.setLastName(clientBean.getLastName());
+            cb.setAddress1(clientBean.getAddress1());
+            cb.setAddress2(clientBean.getAddress2());
+            cb.setCity(clientBean.getCity());
+            cb.setProvince(clientBean.getProvince());
+            cb.setPostalCode(clientBean.getPostalCode());
+            cb.setCountry(clientBean.getCountry());
+            cb.setEmail(clientBean.getEmail());
+            cb.setHomePhone(clientBean.getHomePhone());
+            cb.setCellPhone(clientBean.getCellPhone());
+            cb.setUsername(clientBean.getUserName());
+            cb.setPassword(clientBean.getPassword());
+
+            entityManager.persist(cb);
+            userTransaction.commit();
+            
+            
+            clientBean.login();
+            clientBean.setClientID(cb.getClientID());
+            clientBean.setCompanyName(clientBean.getCompanyName());
+            clientBean.setFirstName(clientBean.getFirstName());
+            clientBean.setLastName(clientBean.getLastName());
+            clientBean.setAddress1(clientBean.getAddress1());
+            clientBean.setAddress2(clientBean.getAddress2());
+            clientBean.setCellPhone(clientBean.getCellPhone());
+            clientBean.setCity(clientBean.getCity());
+            clientBean.setCountry(clientBean.getCountry());
+            clientBean.setEmail(clientBean.getEmail());
+            clientBean.setProvince(clientBean.getProvince());
+            clientBean.setTitle(clientBean.getTitle());
+            clientBean.setPostalCode(clientBean.getPostalCode());
+            clientBean.setHomePhone(clientBean.getHomePhone());
+            
+            
+        } catch (Exception ex) {
+            Logger.getLogger(ClientActionBean.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                userTransaction.rollback();
+                success = false;
+
+            } catch (Exception ex1) {
+                Logger.getLogger(ClientActionBean.class.getName()).log(Level.SEVERE, null, ex1);
+                success = false;
+            }
+
+        }
+        
+           
+        return "registrationForm";
+    }
+   
+
+}

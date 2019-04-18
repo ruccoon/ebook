@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:composition>
+        <h1>#{msgs.orderDetailsTitle}</h1>
+
+
+        <p>#{clientBean.firstName}  #{clientBean.lastName} </p>
+        <p>#{clientBean.address1}  #{clientBean.address2} </p>
+        <p>#{clientBean.city}  #{clientBean.province} </p>
+        <p>#{clientBean.postalCode} </p>
+
+
+        <p> Invoice: #{invoiceBean.invoiceID}</p>      
+
+        <h:dataTable value="#{invoiceActionBean.getOrdersDetailsByID(invoiceBean.invoiceID)}" var="i" styleClass="cartdetails" headerClass="header">
+
+
+
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">DownLoad Ebook File</f:facet>
+
+                <h:outputLink  value="http://math.hws.edu/eck/cs124/downloads/javanotes5-linked.pdf" target="_blank">#{i[4]}</h:outputLink>
+
+            </h:column>
+
+
+
+
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Book Title</f:facet>
+                <!-- row record -->
+                <h:outputLink  value="http://math.hws.edu/eck/cs124/downloads/javanotes5-linked.pdf" target="_blank">#{i[3]}</h:outputLink>
+
+            </h:column>
+
+          
+
+        </h:dataTable>
+    </ui:composition>
+
+</html>
